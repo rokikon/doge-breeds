@@ -1,0 +1,6 @@
+<app-dogs-table [columns]="columns"
+                [dataSource]="dogs$ | async"
+                [sort]="sort$ | async"
+                [search]="search$ | async"
+                (searchChange)="onSearchChange($event)"
+                (sortChange)="onSortChange($event)"></app-dogs-table>

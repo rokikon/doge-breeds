@@ -1,0 +1,59 @@
+<div class="grid"
+     [ngStyle]="{ 'grid-template-columns': gridStyle }"
+     cdkDropList
+     cdkDropListOrientation="horizontal"
+     (cdkDropListDropped)="drop($event)">
+    <ng-container *ngFor="let column of columns; index as i">
+        <div class="grid-column" cdkDrag>
+            <!-- Table Header -->
+            <div class="grid-header cursor-pointer">
+                <div>
+                    <strong>{{ column.title }}</strong>
+                    <!-- Toolbar Icons -->
+                    <mat-icon *ngIf="column.searchable" (click)="showSearch($event)">search</mat-icon>
+                    <mat-icon *ngIf="column.sortable && column.dataKey" (click)="onSort(column.dataKey)">sort</mat-icon>
+                    <ng-container *ngIf="sort && sort.sortingKey === column.dataKey">
+                        <mat-icon *ngIf="sort.order === SortingOrder.ASC; else desc">north</mat-icon>
+                        <ng-template #desc>
+                            <mat-icon>south</mat-icon>
+                        </ng-template>
+                    </ng-container>
+                    <!--         -->
+                </div>
+                <div class="resize-handler">
+                    <mat-icon class="bg-transparent" cdkDragHandle>open_with</mat-icon>
+                    <mat-icon class="bg-transparent"
+                              draggable="true"
+                              (drag)="onResize($event)"
+                              (dragstart)="onResizeStart($event, i)">aspect_ratio</mat-icon>
+                </div>
+            </div>
+            <!-- Search Popup -->
+            <ng-container *ngIf="searchVisible && column.searchable && column.dataKey">
+                <div class="search-popup">
+                    <div>Search: {{ column.title }}</div>
+                    <input type="text" [value]="search ? search.value : ''" (input)="onSearch($event, column.dataKey)">
+                </div>
+            </ng-container>
+            <!--        -->
+
+            <!--   Table Row Cell     -->
+            <ng-container *ngFor="let item of dataSource; even as isEven">
+                <div *ngIf="column.provideCellEventEmitter; else simpleCell"
+                     class="event-emitter-cell cursor-pointer"
+                     (click)="column.provideCellEventEmitter.emit(item)">
+                    Show Picture
+                </div>
+                <ng-template #simpleCell>
+                    <div [class.even]="isEven">
+                        <ng-container *ngIf="column.dataKey">
+                            {{ item[column.dataKey] }}
+                        </ng-container>
+                    </div>
+                </ng-template>
+            </ng-container>
+            <!--        -->
+            <div *cdkDragPreview><strong>{{ column.title }}</strong></div>
+        </div>
+    </ng-container>
+</div>
